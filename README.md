@@ -6,23 +6,23 @@ Inspired by Alibaba's Page Agent approach: no screenshots, no vision models. Ins
 How It Works
 text
 .test file (plain English)
-        │
-        ▼
+        |
+        v
   Test Runner reads each line
-        │
-        ▼ (for each step)
-  DOM Processor ──► scans the page with page.evaluate()
-        │            builds a numbered list of interactive elements
-        ▼
-  LLM Planner ────► sends element list + your instruction to the LLM
-        │            LLM returns a JSON action plan
-        ▼
-  Action Executor ► converts element indices to CSS selectors
-        │            executes via Puppeteer (click, type, select, etc.)
-        ▼
-  Pass / Fail ────► next step
-        │
-        ▼
+        |
+        v  (for each step)
+  DOM Processor ----> scans the page with page.evaluate()
+        |              builds a numbered list of interactive elements
+        v
+  LLM Planner ------> sends element list + your instruction to the LLM
+        |              LLM returns a JSON action plan
+        v
+  Action Executor ---> converts element indices to CSS selectors
+        |              executes via Puppeteer (click, type, select, etc.)
+        v
+  Pass / Fail -------> next step
+        |
+        v
   HTML Report
 Every test step goes through the LLM. The LLM reads the page's interactive elements and figures out which one matches your plain English description — no hardcoded selectors needed.
 
@@ -41,7 +41,7 @@ Headed or headless — watch the browser in real time or run invisibly in CI
 
 HTML reports — test reports with pass/fail status per step
 
-CLI runner — npx page-agent run ./tests
+CLI runner — run tests with npx page-agent run ./tests
 
 Quick Start
 1. Install dependencies
@@ -61,7 +61,6 @@ cp .env.example .env
 Edit .env with your LLM details:
 
 text
-# Local Ollama
 LLM_BASE_URL=http://localhost:11434/v1
 LLM_API_KEY=ollama
 LLM_MODEL=qwen3.5:4b
@@ -92,14 +91,14 @@ Click the Submit Application button
 Wait for 2 seconds
 Take a screenshot named "form-submitted"
 Test File Format
-text
-# Test: <name>          ← required: test name
-# URL: <url>            ← optional: starting URL
-# Tags: tag1, tag2      ← optional: comma-separated tags
+Line starting with # Test: sets the test name (required)
 
-<plain English step 1>
-<plain English step 2>
-...
+Line starting with # URL: sets the starting URL (optional)
+
+Line starting with # Tags: sets comma-separated tags (optional)
+
+All other non-empty, non-comment lines are test steps
+
 Supported Action Types
 The LLM can produce any of these actions based on your English instructions:
 
@@ -202,14 +201,14 @@ page-agent/
 │   ├── cli.ts                   # CLI entry point (run / validate / init)
 │   ├── index.ts                 # Public API exports
 │   ├── core/
-│   │   ├── page-agent.ts        # Main agent loop — orchestrates DOM → LLM → Execute
-│   │   ├── dom-processor.ts     # Injects JS via page.evaluate() to extract interactive elements
-│   │   ├── llm-planner.ts       # Sends DOM + instruction to LLM, parses JSON action plan
-│   │   ├── action-executor.ts   # Resolves element indices to CSS selectors, executes via Puppeteer
+│   │   ├── page-agent.ts        # Main agent loop: DOM → LLM → Execute
+│   │   ├── dom-processor.ts     # Extracts interactive elements via page.evaluate()
+│   │   ├── llm-planner.ts       # Sends DOM + instruction to LLM, parses JSON plan
+│   │   ├── action-executor.ts   # Resolves element indices to selectors, runs Puppeteer
 │   │   └── types.ts             # TypeScript interfaces (32 types)
 │   ├── llm/
 │   │   ├── provider.ts          # LLM provider interface
-│   │   └── openai-provider.ts   # OpenAI-compatible provider (works with Ollama, vLLM, etc.)
+│   │   └── openai-provider.ts   # OpenAI-compatible provider (Ollama, vLLM, etc.)
 │   ├── runner/
 │   │   ├── test-runner.ts       # Test orchestration and browser lifecycle
 │   │   ├── test-parser.ts       # Parses .test files into structured test cases
@@ -218,23 +217,24 @@ page-agent/
 │       ├── logger.ts            # Colored console logging
 │       └── config.ts            # Environment and .env file loading
 ├── examples/
-│   ├── login-flow.test                        # Login test (the-internet.herokuapp.com)
+│   ├── login-flow.test                        # Login test
 │   ├── form-fill.test                         # Forgot password form test
 │   ├── google-search.test                     # Google search test
-│   ├── student-registration-vanilla.test      # Student form — Vanilla JS + Tailwind
-│   └── student-registration-react-mui.test    # Student form — React + Material UI
+│   ├── student-registration-vanilla.test      # Student form (Vanilla JS + Tailwind)
+│   └── student-registration-react-mui.test    # Student form (React + Material UI)
 ├── tests/
 │   └── example.test
 ├── package.json
 ├── tsconfig.json
 ├── .env.example
+├── .gitignore
 └── README.md
 Core Components
 Component	What it does
-DOM Processor	Injects JavaScript into the browser page to find all interactive elements (buttons, inputs, links, dropdowns, etc.). Assigns each a number and builds a text list like [1] <button> "Submit". Also generates a map of index → CSS selector.
+DOM Processor	Injects JavaScript into the browser page to find all interactive elements (buttons, inputs, links, dropdowns). Assigns each a number and builds a text list like [1] <button> "Submit". Also generates a map of index to CSS selector.
 LLM Planner	Takes the numbered element list + your English instruction and sends it to the LLM. The LLM returns a JSON plan with actions like { "type": "click", "elementIndex": 1 }. Handles response parsing, JSON extraction, and validation.
-Action Executor	Receives the JSON plan, looks up the CSS selector for each element index, and calls the corresponding Puppeteer method (page.click(), page.type(), page.select(), etc.). Handles scrolling into view, waiting for elements, and navigation.
-Page Agent	The orchestrator. For each test step: extracts DOM → sends to LLM → executes plan → retries on failure.
+Action Executor	Receives the JSON plan, looks up the CSS selector for each element index, and calls the corresponding Puppeteer method (page.click, page.type, page.select, etc.). Handles scrolling into view, waiting for elements, and navigation.
+Page Agent	The orchestrator. For each test step: extracts DOM, sends to LLM, executes plan, retries on failure.
 Test Runner	Manages browser launch, test file discovery, and runs each test case through the Page Agent.
 Reporter	Outputs colored console results and generates HTML reports.
 Programmatic API
@@ -268,7 +268,7 @@ class MyProvider implements LLMProvider {
 Performance Tips
 LLM speed is the bottleneck — each step requires an LLM call. Use a smaller model (qwen3.5:4b) for faster responses on a laptop.
 
-GPU server recommended — for production use, host the LLM on a server with a GPU (even an NVIDIA T4 at ~$0.35/hr makes a big difference).
+GPU server recommended — for production use, host the LLM on a server with a GPU. Even an NVIDIA T4 at around $0.35/hr makes a big difference.
 
 Headless mode — set HEADLESS=true for faster execution when you don't need to watch.
 
@@ -280,3 +280,6 @@ The framework works with any website. Some good sites for practice:
 the-internet.herokuapp.com — classic automation practice site
 
 testrpages.com — 20 tech stacks with Good/Bad/Ugly testing modes
+
+License
+MIT
