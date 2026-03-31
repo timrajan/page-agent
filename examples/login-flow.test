@@ -1,0 +1,12 @@
+# Test: Login Flow
+# URL: https://the-internet.herokuapp.com/login
+# Tags: auth, regression
+
+Navigate to https://the-internet.herokuapp.com/login
+Verify that the page contains "Login Page"
+Type "tomsmith" in the username input field
+Type "SuperSecretPassword!" in the password field
+Click the Login button
+Wait for 2 seconds
+Verify that the page contains "secure area"
+Take a screenshot named "logged-in"

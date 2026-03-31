@@ -1,0 +1,39 @@
+{
+  "name": "page-agent",
+  "version": "1.0.0",
+  "description": "AI-powered Puppeteer test automation framework — write tests in plain English",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "page-agent": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/cli.ts",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "puppeteer",
+    "testing",
+    "automation",
+    "ai",
+    "llm",
+    "natural-language"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "dotenv": "^16.4.5",
+    "glob": "^10.3.10",
+    "openai": "^4.47.1",
+    "puppeteer": "^22.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

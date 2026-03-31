@@ -1,0 +1,21 @@
+# Test: Student Registration - React + Material UI
+# URL: https://testrpages.com/react-mui/good
+# Tags: smoke, registration, form
+
+Navigate to https://testrpages.com/react-mui/good
+Wait for 2 seconds
+#Verify that the page contains "Student Registration"
+Click on the START TESTING button
+Type "Sarah" in the First Name input field
+Type "Mitchell" in the Last Name input field
+Type "sarah.mitchell@student.edu" in the Email input field
+Type "SecurePass123!" in the Password input field
+Click the "Female" radio button
+Click the "Subscribe to newsletter" checkbox
+Type "An enthusiastic student with a keen interest in quantum physics and astrophysics. Looking forward to an exciting academic journey." in the Bio textarea
+
+Take a screenshot named "react-mui-form-filled"
+
+Click the Submit button
+Wait for 2 seconds
+Take a screenshot named "react-mui-form-submitted"

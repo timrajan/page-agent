@@ -1,0 +1,11 @@
+# Test: Wikipedia Article Search
+# URL: https://en.wikipedia.org
+# Tags: smoke, example
+
+Navigate to https://en.wikipedia.org/wiki/Main_Page
+Click the search input field
+Type "Puppeteer (software)" in the search input
+Press Enter
+Wait for 2 seconds
+Verify that the page contains "headless"
+Take a screenshot named "wikipedia-article"

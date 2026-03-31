@@ -1,0 +1,13 @@
+# Test: Form Fill and Submit
+# URL: https://the-internet.herokuapp.com/forgot_password
+# Tags: forms, regression
+
+Navigate to https://the-internet.herokuapp.com/forgot_password
+Verify that the page contains "Forgot Password"
+Click the Email field
+Type "test@example.com" in the email address input field
+Take a screenshot named "form-filled"
+Click the Retrieve Password button
+Wait for 2 seconds
+Verify that the page contains "Your e-mail's been sent"
+Take a screenshot named "form-submitted"

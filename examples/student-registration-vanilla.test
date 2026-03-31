@@ -1,0 +1,24 @@
+# Test: Student Registration - Vanilla JS + Tailwind
+# URL: https://testrpages.com/vanilla-tailwind/good
+# Tags: smoke, registration, form
+
+Navigate to https://testrpages.com/vanilla-tailwind/good
+Wait for 2 seconds
+Verify that the page contains "Student Registration"
+Click on the Register Student link
+Type "James" in the First name input field
+Type "Anderson" in the Last name input field
+Select "Female" from the Gender dropdown
+Select "High School" from the Grade dropdown
+Type "A passionate student who loves science and mathematics." in the Student Personal Statement textarea
+
+Type "Robert Anderson" in the Parent Name input field
+Type "robert.anderson@email.com" in the Email input field
+Type "0412345678" in the Phone input field
+Type "42 Wallaby Way, Sydney NSW 2000" in the Address textarea
+
+Take a screenshot named "vanilla-form-filled"
+
+Click the Submit Application button
+Wait for 2 seconds
+Take a screenshot named "vanilla-form-submitted"
