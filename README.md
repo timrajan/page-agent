@@ -1,80 +1,98 @@
-Page Agent
-An AI-powered Puppeteer test automation framework. Write tests in plain English — the AI agent converts your instructions into precise browser actions.
+````markdown
+# 🤖 Page Agent
 
-Inspired by Alibaba's Page Agent approach: no screenshots, no vision models. Instead, the DOM is extracted as structured text and sent to an LLM which returns a JSON action plan that Puppeteer executes.
+> An AI-powered Puppeteer test automation framework. Write tests in plain English — the AI agent converts your instructions into precise browser actions.
 
-How It Works
-text
+Inspired by Alibaba's Page Agent approach: **no screenshots, no vision models**. Instead, the DOM is extracted as structured text and sent to an LLM which returns a JSON action plan that Puppeteer executes.
+
+---
+
+## How It Works
+````
 .test file (plain English)
-        |
-        v
-  Test Runner reads each line
-        |
-        v  (for each step)
-  DOM Processor ----> scans the page with page.evaluate()
-        |              builds a numbered list of interactive elements
-        v
-  LLM Planner ------> sends element list + your instruction to the LLM
-        |              LLM returns a JSON action plan
-        v
-  Action Executor ---> converts element indices to CSS selectors
-        |              executes via Puppeteer (click, type, select, etc.)
-        v
-  Pass / Fail -------> next step
-        |
-        v
-  HTML Report
-Every test step goes through the LLM. The LLM reads the page's interactive elements and figures out which one matches your plain English description — no hardcoded selectors needed.
+        │
+        ▼
+Test Runner reads each line
+        │
+        ▼ (for each step)
+DOM Processor ──────► scans the page with page.evaluate()
+        │               builds a numbered list of interactive elements
+        ▼
+LLM Planner ─────────► sends element list + your instruction to the LLM
+        │               LLM returns a JSON action plan
+        ▼
+Action Executor ─────► converts element indices to CSS selectors
+        │               executes via Puppeteer (click, type, select, etc.)
+        ▼
+  Pass / Fail ─────────► next step
+        │
+        ▼
+   HTML Report
+````
 
-Features
-Plain English tests — write natural language instructions, no code required
+Every test step goes through the LLM. The LLM reads the page's interactive elements and figures out which one matches your plain English description — **no hardcoded selectors needed**.
 
-Pure LLM-driven — every step is interpreted by your LLM, no keyword matching or fuzzy logic
+---
 
-DOM-based context — injects JS into the page to extract all interactive elements as structured text
+## Features
 
-BYOLLM — works with any OpenAI-compatible API: GPT-4o, Qwen, DeepSeek, Ollama, vLLM, etc.
+- 📝 **Plain English tests** — write natural language instructions, no code required
+- 🧠 **Pure LLM-driven** — every step is interpreted by your LLM, no keyword matching or fuzzy logic
+- 🌐 **DOM-based context** — injects JS into the page to extract all interactive elements as structured text
+- 🔌 **BYOLLM** — works with any OpenAI-compatible API: GPT-4o, Qwen, DeepSeek, Ollama, vLLM, etc.
+- 🔁 **Smart retries** — on failure, re-extracts the DOM and retries with the LLM up to `MAX_RETRIES` times
+- 👁️ **Headed or headless** — watch the browser in real time or run invisibly in CI
+- 📊 **HTML reports** — test reports with pass/fail status per step
+- ⚡ **CLI runner** — run tests with `npx page-agent run ./tests`
 
-Smart retries — on failure, re-extracts the DOM and retries with the LLM up to MAX_RETRIES times
+---
 
-Headed or headless — watch the browser in real time or run invisibly in CI
+## Quick Start
 
-HTML reports — test reports with pass/fail status per step
-
-CLI runner — run tests with npx page-agent run ./tests
-
-Quick Start
-1. Install dependencies
-bash
+**1. Install dependencies**
+```bash
 npm install
-2. Install Chromium for Puppeteer
-bash
+```
+
+**2. Install Chromium for Puppeteer**
+```bash
 npx puppeteer browsers install chrome
-3. Set up your LLM
+```
+
+**3. Set up your LLM**
+
 If using a local model via Ollama:
-
-bash
+```bash
 ollama pull qwen3.5:4b
-4. Configure
-bash
-cp .env.example .env
-Edit .env with your LLM details:
+```
 
-text
+**4. Configure**
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your LLM details:
+```env
 LLM_BASE_URL=http://localhost:11434/v1
 LLM_API_KEY=ollama
 LLM_MODEL=qwen3.5:4b
 HEADLESS=false
-5. Build and run
-bash
+```
+
+**5. Build and run**
+```bash
 npm run build
 npx page-agent run examples/login-flow.test --headed
+```
+
 You'll see a Chromium browser open and execute each step in real time.
 
-Writing Tests
-Create a .test file with metadata headers and plain English steps:
+---
 
-text
+## Writing Tests
+
+Create a `.test` file with metadata headers and plain English steps:
+````
 # Test: Student Registration
 # URL: https://testrpages.com/vanilla-tailwind/good
 # Tags: smoke, registration
@@ -90,33 +108,40 @@ Type "A passionate student who loves science." in the Student Personal Statement
 Click the Submit Application button
 Wait for 2 seconds
 Take a screenshot named "form-submitted"
-Test File Format
-Line starting with # Test: sets the test name (required)
+````
 
-Line starting with # URL: sets the starting URL (optional)
+### Test File Format
 
-Line starting with # Tags: sets comma-separated tags (optional)
+| Line format | Purpose |
+|---|---|
+| `# Test: ...` | Sets the test name *(required)* |
+| `# URL: ...` | Sets the starting URL *(optional)* |
+| `# Tags: ...` | Sets comma-separated tags *(optional)* |
+| Any other non-empty line | A test step |
 
-All other non-empty, non-comment lines are test steps
+---
 
-Supported Action Types
-The LLM can produce any of these actions based on your English instructions:
+## Supported Action Types
 
-You write...	The LLM produces...
-Navigate to https://example.com	navigate action
-Type "hello" in the search box	click + type actions
-Click the Submit button	click action
-Select "Physics" from the Course dropdown	select action
-Hover over the menu item	hover action
-Press Enter	press action
-Scroll down 400	scroll action
-Wait for 2 seconds	wait action
-Verify that the page contains "Success"	assert_text action
-Take a screenshot named "result"	screenshot action
-You don't need to remember exact syntax — the LLM interprets natural language. "Click the login button", "Press the sign in button", "Hit the log in link" all work.
+| You write... | The LLM produces... |
+|---|---|
+| `Navigate to https://example.com` | `navigate` action |
+| `Type "hello" in the search box` | `click` + `type` actions |
+| `Click the Submit button` | `click` action |
+| `Select "Physics" from the Course dropdown` | `select` action |
+| `Hover over the menu item` | `hover` action |
+| `Press Enter` | `press` action |
+| `Scroll down 400` | `scroll` action |
+| `Wait for 2 seconds` | `wait` action |
+| `Verify that the page contains "Success"` | `assert_text` action |
+| `Take a screenshot named "result"` | `screenshot` action |
 
-CLI Reference
-bash
+> You don't need to remember exact syntax — the LLM interprets natural language. *"Click the login button"*, *"Press the sign in button"*, *"Hit the log in link"* all work.
+
+---
+
+## CLI Reference
+```bash
 # Run a single test file
 npx page-agent run ./tests/login.test
 
@@ -149,79 +174,102 @@ npx page-agent init
 
 # Verbose/debug output
 npx page-agent run ./tests --verbose
-Configuration
-All configuration is via environment variables (or a .env file):
+```
 
-Variable	Default	Description
-LLM_API_KEY	(required)	API key for your LLM provider
-LLM_MODEL	gpt-4o	Model name
-LLM_BASE_URL	https://api.openai.com/v1	API base URL
-LLM_PROVIDER	openai	Provider identifier (informational)
-HEADLESS	true	Set to false to see the browser
-VIEWPORT_WIDTH	1280	Browser viewport width
-VIEWPORT_HEIGHT	720	Browser viewport height
-TIMEOUT	30000	Action timeout in ms
-MAX_RETRIES	3	Max retries per step on failure
-SCREENSHOT_DIR	./screenshots	Screenshot output directory
-LLM Provider Examples
-Local Ollama:
+---
 
-text
+## Configuration
+
+| Variable | Default | Description |
+|---|---|---|
+| `LLM_API_KEY` | *(required)* | API key for your LLM provider |
+| `LLM_MODEL` | `gpt-4o` | Model name |
+| `LLM_BASE_URL` | `https://api.openai.com/v1` | API base URL |
+| `LLM_PROVIDER` | `openai` | Provider identifier (informational) |
+| `HEADLESS` | `true` | Set to `false` to see the browser |
+| `VIEWPORT_WIDTH` | `1280` | Browser viewport width |
+| `VIEWPORT_HEIGHT` | `720` | Browser viewport height |
+| `TIMEOUT` | `30000` | Action timeout in ms |
+| `MAX_RETRIES` | `3` | Max retries per step on failure |
+| `SCREENSHOT_DIR` | `./screenshots` | Screenshot output directory |
+
+### LLM Provider Examples
+
+<details>
+<summary><strong>Local Ollama</strong></summary>
+```env
 LLM_BASE_URL=http://localhost:11434/v1
 LLM_MODEL=qwen3.5:4b
 LLM_API_KEY=ollama
-OpenAI:
+```
+</details>
 
-text
+<details>
+<summary><strong>OpenAI</strong></summary>
+```env
 LLM_BASE_URL=https://api.openai.com/v1
 LLM_MODEL=gpt-4o
 LLM_API_KEY=sk-your-openai-key
-DeepSeek:
+```
+</details>
 
-text
+<details>
+<summary><strong>DeepSeek</strong></summary>
+```env
 LLM_BASE_URL=https://api.deepseek.com/v1
 LLM_MODEL=deepseek-chat
 LLM_API_KEY=sk-your-deepseek-key
-Qwen via DashScope (Alibaba Cloud):
+```
+</details>
 
-text
+<details>
+<summary><strong>Qwen via DashScope (Alibaba Cloud)</strong></summary>
+```env
 LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 LLM_MODEL=qwen-turbo
 LLM_API_KEY=sk-your-dashscope-key
-vLLM on a remote server:
+```
+</details>
 
-text
+<details>
+<summary><strong>vLLM on a remote server</strong></summary>
+```env
 LLM_BASE_URL=http://your-gpu-server:8000/v1
 LLM_MODEL=Qwen/Qwen2.5-7B-Instruct
 LLM_API_KEY=token-123
-Architecture
-text
+```
+</details>
+
+---
+
+## Architecture
+````
 page-agent/
 ├── src/
-│   ├── cli.ts                   # CLI entry point (run / validate / init)
-│   ├── index.ts                 # Public API exports
+│   ├── cli.ts                    # CLI entry point (run / validate / init)
+│   ├── index.ts                  # Public API exports
 │   ├── core/
-│   │   ├── page-agent.ts        # Main agent loop: DOM → LLM → Execute
-│   │   ├── dom-processor.ts     # Extracts interactive elements via page.evaluate()
-│   │   ├── llm-planner.ts       # Sends DOM + instruction to LLM, parses JSON plan
-│   │   ├── action-executor.ts   # Resolves element indices to selectors, runs Puppeteer
-│   │   └── types.ts             # TypeScript interfaces (32 types)
+│   │   ├── page-agent.ts         # Main agent loop: DOM → LLM → Execute
+│   │   ├── dom-processor.ts      # Extracts interactive elements via page.evaluate()
+│   │   ├── llm-planner.ts        # Sends DOM + instruction to LLM, parses JSON plan
+│   │   ├── action-executor.ts    # Resolves element indices to selectors, runs Puppeteer
+│   │   └── types.ts              # TypeScript interfaces (32 types)
 │   ├── llm/
-│   │   ├── provider.ts          # LLM provider interface
-│   │   └── openai-provider.ts   # OpenAI-compatible provider (Ollama, vLLM, etc.)
+│   │   ├── provider.ts           # LLM provider interface
+│   │   └── openai-provider.ts    # OpenAI-compatible provider (Ollama, vLLM, etc.)
 │   ├── runner/
-│   │   ├── test-runner.ts       # Test orchestration and browser lifecycle
-│   │   ├── test-parser.ts       # Parses .test files into structured test cases
-│   │   └── reporter.ts          # Console output + HTML report generation
+│   │   ├── test-runner.ts        # Test orchestration and browser lifecycle
+│   │   ├── test-parser.ts        # Parses .test files into structured test cases
+│   │   └── reporter.ts           # Console output + HTML report generation
 │   └── utils/
-│       ├── logger.ts            # Colored console logging
-│       └── config.ts            # Environment and .env file loading
+│       ├── logger.ts             # Colored console logging
+│       └── config.ts             # Environment and .env file loading
 ├── examples/
-│   ├── login-flow.test                        # Login test
-│   ├── form-fill.test                         # Forgot password form test
-│   ├── google-search.test                     # Google search test
-│   ├── student-registration-vanilla.test      # Student form (Vanilla JS + Tailwind)
-│   └── student-registration-react-mui.test    # Student form (React + Material UI)
+│   ├── login-flow.test
+│   ├── form-fill.test
+│   ├── google-search.test
+│   ├── student-registration-vanilla.test
+│   └── student-registration-react-mui.test
 ├── tests/
 │   └── example.test
 ├── package.json
@@ -229,16 +277,23 @@ page-agent/
 ├── .env.example
 ├── .gitignore
 └── README.md
-Core Components
-Component	What it does
-DOM Processor	Injects JavaScript into the browser page to find all interactive elements (buttons, inputs, links, dropdowns). Assigns each a number and builds a text list like [1] <button> "Submit". Also generates a map of index to CSS selector.
-LLM Planner	Takes the numbered element list + your English instruction and sends it to the LLM. The LLM returns a JSON plan with actions like { "type": "click", "elementIndex": 1 }. Handles response parsing, JSON extraction, and validation.
-Action Executor	Receives the JSON plan, looks up the CSS selector for each element index, and calls the corresponding Puppeteer method (page.click, page.type, page.select, etc.). Handles scrolling into view, waiting for elements, and navigation.
-Page Agent	The orchestrator. For each test step: extracts DOM, sends to LLM, executes plan, retries on failure.
-Test Runner	Manages browser launch, test file discovery, and runs each test case through the Page Agent.
-Reporter	Outputs colored console results and generates HTML reports.
-Programmatic API
-typescript
+````
+
+### Core Components
+
+| Component | What it does |
+|---|---|
+| **DOM Processor** | Injects JavaScript into the browser page to find all interactive elements (buttons, inputs, links, dropdowns). Assigns each a number and builds a text list like `[1] "Submit"`. Also generates a map of index → CSS selector. |
+| **LLM Planner** | Takes the numbered element list + your English instruction and sends it to the LLM. The LLM returns a JSON plan with actions like `{ "type": "click", "elementIndex": 1 }`. Handles response parsing, JSON extraction, and validation. |
+| **Action Executor** | Receives the JSON plan, looks up the CSS selector for each element index, and calls the corresponding Puppeteer method (`page.click`, `page.type`, `page.select`, etc.). Handles scrolling into view, waiting for elements, and navigation. |
+| **Page Agent** | The orchestrator. For each test step: extracts DOM, sends to LLM, executes plan, retries on failure. |
+| **Test Runner** | Manages browser launch, test file discovery, and runs each test case through the Page Agent. |
+| **Reporter** | Outputs colored console results and generates HTML reports. |
+
+---
+
+## Programmatic API
+```typescript
 import { TestRunner, loadConfig, loadEnv } from 'page-agent';
 
 loadEnv();
@@ -252,8 +307,10 @@ const results = await runner.run('./tests', {
 });
 
 console.log(`Passed: ${results.passed}/${results.totalTests}`);
-Custom LLM Provider
-typescript
+```
+
+### Custom LLM Provider
+```typescript
 import { LLMProvider, LLMCompletionOptions, LLMCompletionResult } from 'page-agent';
 
 class MyProvider implements LLMProvider {
@@ -265,21 +322,27 @@ class MyProvider implements LLMProvider {
     return { content: '...', model: this.model };
   }
 }
-Performance Tips
-LLM speed is the bottleneck — each step requires an LLM call. Use a smaller model (qwen3.5:4b) for faster responses on a laptop.
+```
 
-GPU server recommended — for production use, host the LLM on a server with a GPU. Even an NVIDIA T4 at around $0.35/hr makes a big difference.
+---
 
-Headless mode — set HEADLESS=true for faster execution when you don't need to watch.
+## Performance Tips
 
-Reduce retries — set MAX_RETRIES=1 for faster feedback during development.
+- ⏱️ **LLM speed is the bottleneck** — each step requires an LLM call. Use a smaller model (`qwen3.5:4b`) for faster responses on a laptop.
+- 🖥️ **GPU server recommended** — for production use, host the LLM on a server with a GPU. Even an NVIDIA T4 at ~$0.35/hr makes a big difference.
+- 🚀 **Headless mode** — set `HEADLESS=true` for faster execution when you don't need to watch.
+- 🔁 **Reduce retries** — set `MAX_RETRIES=1` for faster feedback during development.
 
-Example Test Sites
-The framework works with any website. Some good sites for practice:
+---
 
-the-internet.herokuapp.com — classic automation practice site
+## Example Test Sites
 
-testrpages.com — 20 tech stacks with Good/Bad/Ugly testing modes
+- [the-internet.herokuapp.com](https://the-internet.herokuapp.com) — classic automation practice site
+- [testrpages.com](https://testrpages.com) — 20 tech stacks with Good/Bad/Ugly testing modes
 
-License
-MIT
+---
+
+## License
+
+[MIT](./LICENSE)
+````
