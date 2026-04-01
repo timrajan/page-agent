@@ -8,7 +8,7 @@ Inspired by Alibaba's Page Agent approach: **no screenshots, no vision models**.
 ---
 
 ## How It Works
-````
+
 .test file (plain English)
         │
         ▼
@@ -28,7 +28,7 @@ Action Executor ─────► converts element indices to CSS selectors
         │
         ▼
    HTML Report
-````
+
 
 Every test step goes through the LLM. The LLM reads the page's interactive elements and figures out which one matches your plain English description — **no hardcoded selectors needed**.
 
