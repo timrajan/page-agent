@@ -50,26 +50,26 @@ Every test step goes through the LLM. The LLM reads the page's interactive eleme
 ## Quick Start
 
 **1. Install dependencies**
-```bash
+
 npm install
-```
+
 
 **2. Install Chromium for Puppeteer**
-```bash
+
 npx puppeteer browsers install chrome
-```
+
 
 **3. Set up your LLM**
 
 If using a local model via Ollama:
-```bash
+
 ollama pull qwen3.5:4b
-```
+
 
 **4. Configure**
-```bash
+
 cp .env.example .env
-```
+
 
 Edit `.env` with your LLM details:
 ```env
@@ -77,13 +77,13 @@ LLM_BASE_URL=http://localhost:11434/v1
 LLM_API_KEY=ollama
 LLM_MODEL=qwen3.5:4b
 HEADLESS=false
-```
+
 
 **5. Build and run**
-```bash
+
 npm run build
 npx page-agent run examples/login-flow.test --headed
-```
+
 
 You'll see a Chromium browser open and execute each step in real time.
 
@@ -92,7 +92,7 @@ You'll see a Chromium browser open and execute each step in real time.
 ## Writing Tests
 
 Create a `.test` file with metadata headers and plain English steps:
-````
+
 # Test: Student Registration
 # URL: https://testrpages.com/vanilla-tailwind/good
 # Tags: smoke, registration
@@ -197,4 +197,4 @@ npx page-agent run ./tests --verbose
 ## License
 
 [MIT](./LICENSE)
-````
+
